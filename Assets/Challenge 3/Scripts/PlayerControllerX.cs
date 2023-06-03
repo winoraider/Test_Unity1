@@ -16,11 +16,13 @@ public class PlayerControllerX : MonoBehaviour
     private AudioSource playerAudio;
     public AudioClip moneySound;
     public AudioClip explodeSound;
+    public AudioClip BoundSound;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        playerRb = GetComponent<Rigidbody>();
         Physics.gravity *= gravityModifier;
         playerAudio = GetComponent<AudioSource>();
 
@@ -36,6 +38,21 @@ public class PlayerControllerX : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && !gameOver)
         {
             playerRb.AddForce(Vector3.up * floatForce);
+        }
+
+        if(transform.position.y > 15)
+        {
+            transform.position = new Vector3(transform.position.x,15,transform.position.z);
+            playerRb.velocity = Vector3.zero;
+        }
+        if(gameOver == false)
+        {
+            if (transform.position.y < 3)
+            {
+                playerRb.velocity = Vector3.zero;
+                playerRb.AddForce(Vector3.up, ForceMode.Impulse);
+                playerAudio.PlayOneShot(BoundSound, 1.0f);
+            }
         }
     }
 
@@ -57,9 +74,6 @@ public class PlayerControllerX : MonoBehaviour
             fireworksParticle.Play();
             playerAudio.PlayOneShot(moneySound, 1.0f);
             Destroy(other.gameObject);
-
         }
-
     }
-
 }
